@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>견관절 신전 관련 근육 단어시험</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4f6fb;color:#172635;font-family:Arial,"Noto Sans KR",sans-serif}
+.wrap{max-width:900px;margin:25px auto;padding:15px}
+.card{background:#fff;border-radius:22px;padding:30px;box-shadow:0 8px 28px rgba(0,0,0,.08)}
+h1{margin:0 0 8px}.sub{color:#68747d;line-height:1.5}
+.section{margin-top:25px}.label{font-weight:700;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.option,.choice{border:1px solid #d5dce2;background:#fafbfc;border-radius:14px;padding:15px;cursor:pointer;font-size:16px;text-align:left;line-height:1.5}
+.option.selected,.choice.selected{background:#eef2f5;outline:3px solid #7c8790}
+.start,.primary{border:0;border-radius:14px;background:#243746;color:white;padding:15px;font-size:17px;cursor:pointer}
+.start{width:100%;margin-top:25px}.secondary{border:0;border-radius:12px;background:#edf0f2;padding:13px 16px;font-size:15px;cursor:pointer}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.badge{background:#edf0f2;padding:7px 12px;border-radius:20px;white-space:nowrap}
+.progress{height:8px;background:#e9edf0;border-radius:10px;margin:18px 0}.progress-in{height:100%;background:#243746;border-radius:10px;width:0}
+.qbox{width:100%;min-height:190px;padding:30px 25px;margin:20px 0;border:2px solid #d9e0e5;border-radius:18px;background:#fafbfc;display:flex;align-items:center;justify-content:center;text-align:center}
+.question{width:100%;font-size:clamp(28px,6vw,48px);line-height:1.45;font-weight:800;overflow-wrap:anywhere;word-break:keep-all;white-space:normal}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}.choice{background:#fff;font-size:17px;overflow-wrap:anywhere;word-break:keep-all}
+.answer{width:100%;padding:16px;border:1px solid #cbd3d9;border-radius:13px;font-size:18px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.actions .primary{flex:1}
+.result{min-height:30px;margin-top:15px;line-height:1.6}.ok{color:#16803a;font-weight:bold}.bad{color:#c33;font-weight:bold}
+.hidden{display:none}.finish{text-align:center}.score{font-size:44px;font-weight:800;margin:20px}
+@media(max-width:600px){
+ .wrap{margin:10px auto;padding:10px}.card{padding:20px}
+ .grid,.choices{grid-template-columns:1fr}
+ .qbox{min-height:150px;padding:20px 12px}
+ .question{font-size:clamp(25px,9vw,40px)}
+}
+</style>
+</head>
+<body>
+<div class="wrap"><div class="card">
+
+<div id="setup">
+<h1>📚 견관절 신전 관련 근육 단어시험</h1>
+<p class="sub">문제 유형과 문제 방향을 선택해서 시험을 시작하세요.</p>
+
+<div class="section">
+<div class="label">① 문제 유형</div>
+<div class="grid" id="types">
+<button class="option selected" data-v="mc">🔘 객관식<br><small>4개 보기</small></button>
+<button class="option" data-v="sa">✍️ 주관식<br><small>직접 입력</small></button>
+<button class="option" data-v="mix">🔘✍️ 주관식 + 객관식<br><small>두 유형이 섞여 출제</small></button>
+</div>
+</div>
+
+<div class="section">
+<div class="label">② 문제 방향</div>
+<div class="grid" id="dirs">
+<button class="option selected" data-v="enko">🇺🇸 영어 → 🇰🇷 한국어<br><small>영어 단어가 문제로 표시됩니다</small></button>
+<button class="option" data-v="koen">🇰🇷 한국어 → 🇺🇸 영어<br><small>한국어 뜻이 문제로 표시됩니다</small></button>
+</div>
+</div>
+
+<div class="section">
+<div class="label">③ 문제 수</div>
+<div class="grid" id="counts">
+<button class="option selected" data-v="11">전체 11문제</button>
+<button class="option" data-v="10">10문제</button>
+<button class="option" data-v="5">5문제</button>
+</div>
+</div>
+
+<button class="start" onclick="startQuiz()">시험 시작하기</button>
+</div>
+
+<div id="quiz" class="hidden">
+<div class="top">
+<div><h1>📚 단어시험</h1><span id="mode" class="badge"></span></div>
+<span id="score" class="badge">0점</span>
+</div>
+<div class="progress"><div id="progress" class="progress-in"></div></div>
+<div id="number" class="sub"></div>
+
+<div class="qbox"><div id="question" class="question"></div></div>
+<div id="choices" class="choices"></div>
+<input id="answer" class="answer hidden" placeholder="정답을 입력하세요">
+
+<div class="actions">
+<button class="primary" onclick="checkAnswer()">정답 확인</button>
+<button class="secondary" onclick="nextQuestion()">다음 문제</button>
+<button class="secondary" onclick="goHome()">설정으로 돌아가기</button>
+</div>
+<div id="result" class="result"></div>
+</div>
+
+<div id="finish" class="hidden finish">
+<h1>🎉 시험 완료!</h1>
+<div id="final" class="score"></div>
+<p id="accuracy"></p>
+<button class="start" onclick="goHome()">다시 선택하기</button>
+</div>
+
+</div></div>
+
+<script>
+const WORDS = [["Posterior deltoid", "후면 삼각근"], ["Spine of scapula", "견갑극"], ["Deltoid tuberosity", "삼각근조면"], ["Shoulder joint", "견관절"], ["Extension", "신전"], ["Latissimus dorsi", "광배근"], ["T7-L5, thoracolumbar fascia, iliac crest", "T7-L5, 흉요근막, 장골능 등"], ["Floor of intertubercular groove", "결절간구 바닥"], ["Teres major", "대원근"], ["Inferior angle of scapula", "견갑골 하각"], ["Medial lip of intertubercular groove", "결절간구 안쪽입술"]];
+let type="mc", dir="enko", count=11, questions=[], idx=0, score=0, answered=false, qtype="mc";
+
+const $ = id => document.getElementById(id);
+const shuffle = a => [...a].sort(() => Math.random() - 0.5);
+
+function bind(group, setter){
+  document.querySelectorAll("#"+group+" .option").forEach(b=>{
+    b.onclick=()=>{
+      document.querySelectorAll("#"+group+" .option").forEach(x=>x.classList.remove("selected"));
+      b.classList.add("selected");
+      setter(b.dataset.v);
+    };
+  });
+}
+bind("types",v=>type=v);
+bind("dirs",v=>dir=v);
+bind("counts",v=>count=Number(v));
+
+function startQuiz(){
+  questions=shuffle(WORDS).slice(0,count);
+  idx=0; score=0;
+  $("setup").classList.add("hidden");
+  $("finish").classList.add("hidden");
+  $("quiz").classList.remove("hidden");
+  showQuestion();
+}
+
+function showQuestion(){
+  if(idx>=questions.length){ finishQuiz(); return; }
+
+  answered=false;
+  const english=questions[idx][0];
+  const korean=questions[idx][1];
+
+  // 선택한 방향에 따라 '문제에 보여줄 값'과 '정답'을 분리
+  const prompt = dir==="enko" ? english : korean;
+  const correct = dir==="enko" ? korean : english;
+
+  qtype = type==="mix" ? (Math.random()<0.5 ? "mc" : "sa") : type;
+
+  $("question").textContent=prompt;
+  $("question").dataset.correct=correct;
+  $("number").textContent=(idx+1)+" / "+questions.length;
+  $("score").textContent=score+"점";
+  $("progress").style.width=(idx/questions.length*100)+"%";
+  $("result").textContent="";
+  $("answer").value="";
+  $("mode").textContent=qtype==="mc"?"객관식":"주관식";
+
+  $("choices").innerHTML="";
+  $("choices").dataset.selected="";
+  $("choices").classList.toggle("hidden",qtype==="sa");
+  $("answer").classList.toggle("hidden",qtype==="mc");
+
+  if(qtype==="mc"){
+    const allAnswers=WORDS.map(x=>dir==="enko"?x[1]:x[0]);
+    const wrong=allAnswers.filter(x=>x!==correct);
+    const options=shuffle([correct,...shuffle(wrong).slice(0,3)]);
+
+    options.forEach(text=>{
+      const b=document.createElement("button");
+      b.className="choice";
+      b.textContent=text;
+      b.onclick=()=>{
+        document.querySelectorAll(".choice").forEach(x=>x.classList.remove("selected"));
+        b.classList.add("selected");
+        $("choices").dataset.selected=text;
+      };
+      $("choices").appendChild(b);
+    });
+  }
+}
+
+function normalize(s){
+  return s.trim().toLowerCase().replace(/\s+/g," ");
+}
+
+function checkAnswer(){
+  if(answered)return;
+
+  const correct=$("question").dataset.correct;
+  const user=qtype==="mc" ? $("choices").dataset.selected : $("answer").value;
+
+  if(!user){
+    $("result").innerHTML='<span class="bad">정답을 선택하거나 입력해주세요.</span>';
+    return;
+  }
+
+  answered=true;
+
+  if(normalize(user)===normalize(correct)){
+    score++;
+    $("result").innerHTML='<span class="ok">⭕ 정답!</span>';
+  }else{
+    $("result").innerHTML='<span class="bad">❌ 오답!</span><br>정답: <b>'+correct+'</b>';
+  }
+  $("score").textContent=score+"점";
+}
+
+function nextQuestion(){
+  if(!answered){
+    checkAnswer();
+    if(!answered)return;
+  }
+  idx++;
+  showQuestion();
+}
+
+function finishQuiz(){
+  $("quiz").classList.add("hidden");
+  $("finish").classList.remove("hidden");
+  $("final").textContent=score+" / "+questions.length;
+  $("accuracy").textContent="정답률 "+Math.round(score/questions.length*100)+"%";
+}
+
+function goHome(){
+  $("quiz").classList.add("hidden");
+  $("finish").classList.add("hidden");
+  $("setup").classList.remove("hidden");
+}
+
+$("answer").addEventListener("keydown",e=>{
+  if(e.key==="Enter")checkAnswer();
+});
+</script>
+</body>
+</html>
